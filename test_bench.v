@@ -1,43 +1,43 @@
 module test_bench(clk, rst);
   input  clk;
   input  rst;
-  wire   [15:0] wire_140412587310328;
-  wire   wire_140412587310328_stb;
-  wire   wire_140412587310328_ack;
-  wire   [15:0] wire_140412558007400;
-  wire   wire_140412558007400_stb;
-  wire   wire_140412558007400_ack;
-  wire   [15:0] wire_140412558006608;
-  wire   wire_140412558006608_stb;
-  wire   wire_140412558006608_ack;
-  file_reader_a file_reader_a_140412558008400(
+  wire   [15:0] wire_20477928;
+  wire   wire_20477928_stb;
+  wire   wire_20477928_ack;
+  wire   [15:0] wire_21236120;
+  wire   wire_21236120_stb;
+  wire   wire_21236120_ack;
+  wire   [15:0] wire_21236264;
+  wire   wire_21236264_stb;
+  wire   wire_21236264_ack;
+  file_reader_a file_reader_a_21237200(
     .clk(clk),
     .rst(rst),
-    .output_z(wire_140412587310328),
-    .output_z_stb(wire_140412587310328_stb),
-    .output_z_ack(wire_140412587310328_ack));
-  file_reader_b file_reader_b_140412587357464(
+    .output_z(wire_20477928),
+    .output_z_stb(wire_20477928_stb),
+    .output_z_ack(wire_20477928_ack));
+  file_reader_b file_reader_b_20440632(
     .clk(clk),
     .rst(rst),
-    .output_z(wire_140412558007400),
-    .output_z_stb(wire_140412558007400_stb),
-    .output_z_ack(wire_140412558007400_ack));
-  file_writer file_writer_140412587333896(
+    .output_z(wire_21236120),
+    .output_z_stb(wire_21236120_stb),
+    .output_z_ack(wire_21236120_ack));
+  file_writer file_writer_21201048(
     .clk(clk),
     .rst(rst),
-    .input_a(wire_140412558006608),
-    .input_a_stb(wire_140412558006608_stb),
-    .input_a_ack(wire_140412558006608_ack));
-  divider divider_140412587258728(
+    .input_a(wire_21236264),
+    .input_a_stb(wire_21236264_stb),
+    .input_a_ack(wire_21236264_ack));
+  divider divider_21200976(
     .clk(clk),
     .rst(rst),
-    .input_a(wire_140412587310328),
-    .input_a_stb(wire_140412587310328_stb),
-    .input_a_ack(wire_140412587310328_ack),
-    .input_b(wire_140412558007400),
-    .input_b_stb(wire_140412558007400_stb),
-    .input_b_ack(wire_140412558007400_ack),
-    .output_z(wire_140412558006608),
-    .output_z_stb(wire_140412558006608_stb),
-    .output_z_ack(wire_140412558006608_ack));
+    .input_a(wire_20477928),
+    .input_a_stb(wire_20477928_stb),
+    .input_a_ack(wire_20477928_ack),
+    .input_b(wire_21236120),
+    .input_b_stb(wire_21236120_stb),
+    .input_b_ack(wire_21236120_ack),
+    .output_z(wire_21236264),
+    .output_z_stb(wire_21236264_stb),
+    .output_z_ack(wire_21236264_ack));
 endmodule

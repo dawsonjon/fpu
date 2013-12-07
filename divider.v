@@ -32,30 +32,31 @@ module divider(
   reg       [15:0] s_input_a_ack;
   reg       [15:0] s_input_b_ack;
 
-  reg       [3:0] state;
-  parameter get_a         = 4'd0,
-	    get_a_lo      = 4'd1,
-            get_b         = 4'd2,
-            get_b_lo      = 4'd3,
-            unpack        = 4'd4,
-	    special_cases = 4'd5,
-	    normalise_a   = 4'd6,
-	    normalise_b   = 4'd7,
-            divide_0      = 4'd8,
-            divide_1      = 4'd9,
-            divide_2      = 4'd10,
-            normalise     = 4'd11,
-            round         = 4'd12,
-            pack          = 4'd13,
-            put_z         = 4'd14,
-            put_z_lo      = 4'd15;
+  reg       [4:0] state;
+  parameter get_a         = 5'd0,
+	    get_a_lo      = 5'd1,
+            get_b         = 5'd2,
+            get_b_lo      = 5'd3,
+            unpack        = 5'd4,
+	    special_cases = 5'd5,
+	    normalise_a   = 5'd6,
+	    normalise_b   = 5'd7,
+            divide_0      = 5'd8,
+            divide_1      = 5'd9,
+            divide_2      = 5'd10,
+            normalise_1   = 5'd11,
+            normalise_2   = 5'd12,
+            round         = 5'd13,
+            pack          = 5'd14,
+            put_z         = 5'd15,
+            put_z_lo      = 5'd16;
 
   reg       [31:0] a, b, z;
   reg       [23:0] a_m, b_m, z_m;
   reg       [8:0] a_e, b_e, z_e;
   reg       a_s, b_s, z_s;
   reg       guard, round_bit, sticky;
-  reg       [50:0] quotient, divisor, dividend;
+  reg       [50:0] quotient, divisor, dividend, remainder;
 
   always @(posedge clk)
   begin
@@ -115,12 +116,6 @@ module divider(
 
       special_cases:
       begin
-	$display("am %d", a_m);
-	$display("ae %d", $signed(a_e));
-	$display("as %d", a_s);
-	$display("bm %d", b_m);
-	$display("be %d", $signed(b_e));
-	$display("bs %d", b_s);
         //if a is NaN or b is NaN return NaN 
         if ((a_e == 128 && a_m != 0) || (b_e == 128 && a_m != 0)) begin
           z[31] <= 1;
@@ -216,7 +211,7 @@ module divider(
       begin
         z_s <= a_s ^ b_s;
         z_e <= a_e - b_e;
-        quotient <= a_m << 27;
+        quotient <= a_m << 26;
         divisor <= b_m;
         state <= divide_1;
       end
@@ -225,6 +220,7 @@ module divider(
       begin
         //change this to a serial division later
         dividend <= quotient / divisor;
+        remainder <= quotient % divisor;
         state <= divide_2;
       end
 
@@ -233,11 +229,24 @@ module divider(
         z_m <= dividend[26:3];
         guard <= dividend[2];
         round_bit <= dividend[1];
-        sticky <= dividend[0];
-        state <= normalise;
+        sticky <= dividend[0] | (remainder != 0);
+        state <= normalise_1;
       end
 
-      normalise:
+      normalise_1:
+      begin
+        if (z_m[23] == 0) begin
+          z_e <= z_e - 1;
+          z_m <= z_m << 1;
+	  z_m[0] <= guard;
+          guard <= round_bit;
+	  round_bit <= 0;
+        end else begin
+          state <= normalise_2;
+        end
+      end
+
+      normalise_2:
       begin
         if ($signed(z_e) < -126) begin
           z_e <= z_e + 1;
@@ -265,6 +274,12 @@ module divider(
 	z[31] <= z_s;
         if ($signed(z_e) == -126 && z_m[23] == 0) begin
           z[30 : 23] <= 0;
+        end
+	//if overflow occurs, return inf
+        if ($signed(z_e) > 127) begin
+          z[22 : 0] <= 0;
+          z[30 : 23] <= 255;
+	  z[31] <= z_s;
         end
         state <= put_z;
       end

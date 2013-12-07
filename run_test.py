@@ -46,6 +46,7 @@ def run_test(tb, stimulus_a, stimulus_b):
     stim_a.close()
     stim_b.close()
     tb.compile_iverilog(True)
+    #tb.compile_iverilog()
 
     stim_z = open("resp_z");
     actual_responses = []
@@ -59,31 +60,52 @@ def run_test(tb, stimulus_a, stimulus_b):
 
     for expected, actual, a, b in zip(expected_responses, actual_responses, stimulus_a, stimulus_b):
         if(expected != actual):
+            expected_mantissa = expected & 0x7fffff
+            expected_exponent = ((expected & 0x7f800000) >> 23) - 127
+            expected_sign = ((expected & 0x80000000) >> 31)
+            actual_mantissa = actual & 0x7fffff
+            actual_exponent = ((actual & 0x7f800000) >> 23) - 127
+            actual_sign = ((actual & 0x80000000) >> 31)
+            if expected_exponent == 128 and expected_mantissa != 0:
+                if(actual_exponent == 128):
+                    passed = True
+            else:
+                passed = False
+        else:
+             passed = True
+
+        if not passed:
+
             print "Fail ... expected:", hex(expected), "actual:", hex(actual)
 
+            print hex(a)
             print "a mantissa:", a & 0x7fffff
             print "a exponent:", ((a & 0x7f800000) >> 23) - 127
             print "a sign:", ((a & 0x80000000) >> 31)
 
+            print hex(b)
             print "b mantissa:", b & 0x7fffff
             print "b exponent:", ((b & 0x7f800000) >> 23) - 127
             print "b sign:", ((b & 0x80000000) >> 31)
 
+            print hex(expected)
             print "expected mantissa:", expected & 0x7fffff
             print "expected exponent:", ((expected & 0x7f800000) >> 23) - 127
             print "expected sign:", ((expected & 0x80000000) >> 31)
 
+            print hex(actual)
             print "actual mantissa:", actual & 0x7fffff
             print "actual exponent:", ((actual & 0x7f800000) >> 23) - 127
             print "actual sign:", ((actual & 0x80000000) >> 31)
 
-
             sys.exit(0)
-        else:
-            print "Pass"
 
 tb = build_test_bench()
 seed(0)
-stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
-stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+count = 0
+for i in xrange(100):
+    stimulus_a = [randint(0, 1<<32) for i in xrange(100)]
+    stimulus_b = [randint(0, 1<<32) for i in xrange(100)]
+    run_test(tb, stimulus_a, stimulus_b)
+    print count, "vectors passed"
+    count += 100
