@@ -53,7 +53,7 @@ module divider(
 
   reg       [31:0] a, b, z;
   reg       [23:0] a_m, b_m, z_m;
-  reg       [8:0] a_e, b_e, z_e;
+  reg       [9:0] a_e, b_e, z_e;
   reg       a_s, b_s, z_s;
   reg       guard, round_bit, sticky;
   reg       [50:0] quotient, divisor, dividend, remainder;
@@ -248,6 +248,9 @@ module divider(
 
       normalise_2:
       begin
+//	if (z_m == 0) begin
+//	  z_e <= -127;
+//	  state <= pack;
         if ($signed(z_e) < -126) begin
           z_e <= z_e + 1;
           z_m <= z_m >> 1;

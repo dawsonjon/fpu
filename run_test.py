@@ -24,7 +24,7 @@ def build_test_bench():
     divider(tb, {"a":a, "b":b}, {"z":z})
 
     tb.generate_verilog()
-    tb.generate_testbench(10000)
+    tb.generate_testbench(100000)
 
     return tb
 
@@ -43,6 +43,7 @@ def run_test(tb, stimulus_a, stimulus_b):
         stim_b.write(str(b&0xffff) + "\n")
         z = int(test.stdout.readline())
         expected_responses.append(z)
+    test.terminate()
     stim_a.close()
     stim_b.close()
     tb.compile_iverilog(True)
@@ -101,11 +102,17 @@ def run_test(tb, stimulus_a, stimulus_b):
             sys.exit(0)
 
 tb = build_test_bench()
+
+#regression tests
+stimulus_a = [0x2b017]
+stimulus_b = [0xff3807ab]
+run_test(tb, stimulus_a, stimulus_b)
+
 seed(0)
-count = 0
-for i in xrange(100):
-    stimulus_a = [randint(0, 1<<32) for i in xrange(100)]
-    stimulus_b = [randint(0, 1<<32) for i in xrange(100)]
+count = len(stimulus_a)
+for i in xrange(10000):
+    stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
+    stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
     run_test(tb, stimulus_a, stimulus_b)
+    count += 1000
     print count, "vectors passed"
-    count += 100
