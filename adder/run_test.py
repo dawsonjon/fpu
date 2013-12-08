@@ -18,10 +18,8 @@ def run_test(stimulus_a, stimulus_b):
     for a, b in zip(stimulus_a, stimulus_b):
         test.stdin.write(str(a)+"\n")
         test.stdin.write(str(b)+"\n")
-        stim_a.write(str(a>>16) + "\n")
-        stim_a.write(str(a&0xffff) + "\n")
-        stim_b.write(str(b>>16) + "\n")
-        stim_b.write(str(b&0xffff) + "\n")
+        stim_a.write(str(a) + "\n")
+        stim_b.write(str(b) + "\n")
         z = int(test.stdout.readline())
         expected_responses.append(z)
     test.terminate()
@@ -31,13 +29,8 @@ def run_test(stimulus_a, stimulus_b):
 
     stim_z = open("resp_z");
     actual_responses = []
-    high = True
     for value in stim_z:
-        if high:
-            high_word = int(value) << 16
-        else:
-            actual_responses.append(high_word | int(value))
-        high = not high
+        actual_responses.append(int(value))
 
     for expected, actual, a, b in zip(expected_responses, actual_responses, stimulus_a, stimulus_b):
         if(expected != actual):

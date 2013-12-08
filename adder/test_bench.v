@@ -1,13 +1,13 @@
 module test_bench(clk, rst);
   input  clk;
   input  rst;
-  wire   [15:0] wire_39069600;
+  wire   [31:0] wire_39069600;
   wire   wire_39069600_stb;
   wire   wire_39069600_ack;
-  wire   [15:0] wire_39795024;
+  wire   [31:0] wire_39795024;
   wire   wire_39795024_stb;
   wire   wire_39795024_ack;
-  wire   [15:0] wire_39795168;
+  wire   [31:0] wire_39795168;
   wire   wire_39795168_stb;
   wire   wire_39795168_ack;
   file_reader_a file_reader_a_39796104(
