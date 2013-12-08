@@ -102,14 +102,97 @@ def run_test(tb, stimulus_a, stimulus_b):
             sys.exit(0)
 
 tb = build_test_bench()
+count = 0
 
 #regression tests
-stimulus_a = [0x5c75da81, 0x2b017]
-stimulus_b = [0x2f642a39, 0xff3807ab]
+stimulus_a = [0xbf9b1e94, 0x34082401, 0x5e8ef81, 0x5c75da81, 0x2b017]
+stimulus_b = [0xc038ed3a, 0xb328cd45, 0x114f3db, 0x2f642a39, 0xff3807ab]
 run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+#corner cases
+from itertools import permutations
+stimulus_a = [i[0] for i in permutations([0x80000000, 0x00000000, 0x7f800000, 0xff800000, 0x7fc00000, 0xffc00000], 2)]
+stimulus_b = [i[1] for i in permutations([0x80000000, 0x00000000, 0x7f800000, 0xff800000, 0x7fc00000, 0xffc00000], 2)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+#edge cases
+stimulus_a = [0x80000000 for i in xrange(1000)]
+stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_a = [0x00000000 for i in xrange(1000)]
+stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_b = [0x80000000 for i in xrange(1000)]
+stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_b = [0x00000000 for i in xrange(1000)]
+stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_a = [0x7F800000 for i in xrange(1000)]
+stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_a = [0xFF800000 for i in xrange(1000)]
+stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_b = [0x7F800000 for i in xrange(1000)]
+stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_b = [0xFF800000 for i in xrange(1000)]
+stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_a = [0x7FC00000 for i in xrange(1000)]
+stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_a = [0xFFC00000 for i in xrange(1000)]
+stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_b = [0x7FC00000 for i in xrange(1000)]
+stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
+
+stimulus_b = [0xFFC00000 for i in xrange(1000)]
+stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
+run_test(tb, stimulus_a, stimulus_b)
+count += len(stimulus_a)
+print count, "vectors passed"
 
 #seed(0)
-count = len(stimulus_a)
 for i in xrange(10000):
     stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
     stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]

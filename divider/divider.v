@@ -119,7 +119,7 @@ module divider(
       special_cases:
       begin
         //if a is NaN or b is NaN return NaN 
-        if ((a_e == 128 && a_m != 0) || (b_e == 128 && a_m != 0)) begin
+        if ((a_e == 128 && a_m != 0) || (b_e == 128 && b_m != 0)) begin
           z[31] <= 1;
           z[30:23] <= 255;
 	  z[22] <= 1;
