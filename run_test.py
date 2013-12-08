@@ -108,7 +108,7 @@ stimulus_a = [0x2b017]
 stimulus_b = [0xff3807ab]
 run_test(tb, stimulus_a, stimulus_b)
 
-seed(0)
+#seed(0)
 count = len(stimulus_a)
 for i in xrange(10000):
     stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
