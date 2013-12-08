@@ -15,40 +15,37 @@ module multiplier(
   input     clk;
   input     rst;
 
-  input     [15:0] input_a;
+  input     [31:0] input_a;
   input     input_a_stb;
   output    input_a_ack;
 
-  input     [15:0] input_b;
+  input     [31:0] input_b;
   input     input_b_stb;
   output    input_b_ack;
 
-  output    [15:0] output_z;
+  output    [31:0] output_z;
   output    output_z_stb;
   input     output_z_ack;
 
-  reg       [15:0] s_output_z_stb;
-  reg       [15:0] s_output_z;
-  reg       [15:0] s_input_a_ack;
-  reg       [15:0] s_input_b_ack;
+  reg       s_output_z_stb;
+  reg       [31:0] s_output_z;
+  reg       s_input_a_ack;
+  reg       s_input_b_ack;
 
   reg       [3:0] state;
   parameter get_a         = 4'd0,
-	    get_a_lo      = 4'd1,
-            get_b         = 4'd2,
-            get_b_lo      = 4'd3,
-            unpack        = 4'd4,
-	    special_cases = 4'd5,
-	    normalise_a   = 4'd6,
-	    normalise_b   = 4'd7,
-            multiply_0    = 4'd8,
-            multiply_1    = 4'd9,
-            normalise_1   = 4'd10,
-            normalise_2   = 4'd11,
-            round         = 4'd12,
-            pack          = 4'd13,
-            put_z         = 4'd14,
-            put_z_lo      = 4'd15;
+            get_b         = 4'd1,
+            unpack        = 4'd2,
+	    special_cases = 4'd3,
+	    normalise_a   = 4'd4,
+	    normalise_b   = 4'd5,
+            multiply_0    = 4'd6,
+            multiply_1    = 4'd7,
+            normalise_1   = 4'd8,
+            normalise_2   = 4'd9,
+            round         = 4'd10,
+            pack          = 4'd11,
+            put_z         = 4'd12;
 
   reg       [31:0] a, b, z;
   reg       [23:0] a_m, b_m, z_m;
@@ -66,17 +63,7 @@ module multiplier(
       begin
         s_input_a_ack <= 1;
         if (s_input_a_ack && input_a_stb) begin
-          a[31:16] <= input_a;
-          s_input_a_ack <= 0;
-          state <= get_a_lo;
-        end
-      end
-
-      get_a_lo:
-      begin
-        s_input_a_ack <= 1;
-        if (s_input_a_ack && input_a_stb) begin
-          a[15:0] <= input_a;
+          a <= input_a;
           s_input_a_ack <= 0;
           state <= get_b;
         end
@@ -86,17 +73,7 @@ module multiplier(
       begin
         s_input_b_ack <= 1;
         if (s_input_b_ack && input_b_stb) begin
-          b[31:16] <= input_b;
-          s_input_b_ack <= 0;
-          state <= get_b_lo;
-	end
-      end
-
-      get_b_lo:
-      begin
-        s_input_b_ack <= 1;
-        if (s_input_b_ack && input_b_stb) begin
-          b[15:0] <= input_b;
+          b <= input_b;
           s_input_b_ack <= 0;
           state <= unpack;
 	end
@@ -262,17 +239,7 @@ module multiplier(
       put_z:
       begin
         s_output_z_stb <= 1;
-	s_output_z <= z[31:16];
-        if (s_output_z_stb && output_z_ack) begin
-          s_output_z_stb <= 0;
-          state <= put_z_lo;
-        end
-      end
-
-      put_z_lo:
-      begin
-        s_output_z_stb <= 1;
-	s_output_z <= z[15:0];
+	s_output_z <= z;
         if (s_output_z_stb && output_z_ack) begin
           s_output_z_stb <= 0;
           state <= get_a;

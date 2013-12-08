@@ -6,29 +6,10 @@ import subprocess
 from random import randint
 from random import seed
 
+def compile():
+    subprocess.call("iverilog -o test_bench_tb file_reader_a.v file_reader_b.v file_writer.v divider.v test_bench.v test_bench_tb.v", shell=True)
 
-def build_test_bench():
-    tb = Chip("test_bench")
-    file_reader_a = Component("file_reader_a.c")
-    file_reader_b = Component("file_reader_b.c")
-    file_writer = Component("file_writer.c")
-    divider = VerilogComponent("divider", ["a", "b"], ["z"], "")
-
-    a = Wire(tb)
-    b = Wire(tb)
-    z = Wire(tb)
-
-    file_reader_a(tb, {}, {"z":a})
-    file_reader_b(tb, {}, {"z":b})
-    file_writer(tb, {"a": z}, {})
-    divider(tb, {"a":a, "b":b}, {"z":z})
-
-    tb.generate_verilog()
-    tb.generate_testbench(100000)
-
-    return tb
-
-def run_test(tb, stimulus_a, stimulus_b):
+def run_test(stimulus_a, stimulus_b):
 
     test = subprocess.Popen("c_test/test", stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     stim_a = open("stim_a", 'w');
@@ -37,27 +18,19 @@ def run_test(tb, stimulus_a, stimulus_b):
     for a, b in zip(stimulus_a, stimulus_b):
         test.stdin.write(str(a)+"\n")
         test.stdin.write(str(b)+"\n")
-        stim_a.write(str(a>>16) + "\n")
-        stim_a.write(str(a&0xffff) + "\n")
-        stim_b.write(str(b>>16) + "\n")
-        stim_b.write(str(b&0xffff) + "\n")
+        stim_a.write(str(a) + "\n")
+        stim_b.write(str(b) + "\n")
         z = int(test.stdout.readline())
         expected_responses.append(z)
     test.terminate()
     stim_a.close()
     stim_b.close()
-    tb.compile_iverilog(True)
-    #tb.compile_iverilog()
+    subprocess.call("./test_bench_tb", shell=True)
 
     stim_z = open("resp_z");
     actual_responses = []
-    high = True
     for value in stim_z:
-        if high:
-            high_word = int(value) << 16
-        else:
-            actual_responses.append(high_word | int(value))
-        high = not high
+        actual_responses.append(int(value))
 
     for expected, actual, a, b in zip(expected_responses, actual_responses, stimulus_a, stimulus_b):
         if(expected != actual):
@@ -101,13 +74,13 @@ def run_test(tb, stimulus_a, stimulus_b):
 
             sys.exit(0)
 
-tb = build_test_bench()
+compile()
 count = 0
 
 #regression tests
 stimulus_a = [0xbf9b1e94, 0x34082401, 0x5e8ef81, 0x5c75da81, 0x2b017]
 stimulus_b = [0xc038ed3a, 0xb328cd45, 0x114f3db, 0x2f642a39, 0xff3807ab]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
@@ -115,80 +88,80 @@ print count, "vectors passed"
 from itertools import permutations
 stimulus_a = [i[0] for i in permutations([0x80000000, 0x00000000, 0x7f800000, 0xff800000, 0x7fc00000, 0xffc00000], 2)]
 stimulus_b = [i[1] for i in permutations([0x80000000, 0x00000000, 0x7f800000, 0xff800000, 0x7fc00000, 0xffc00000], 2)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 #edge cases
 stimulus_a = [0x80000000 for i in xrange(1000)]
 stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_a = [0x00000000 for i in xrange(1000)]
 stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_b = [0x80000000 for i in xrange(1000)]
 stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_b = [0x00000000 for i in xrange(1000)]
 stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_a = [0x7F800000 for i in xrange(1000)]
 stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_a = [0xFF800000 for i in xrange(1000)]
 stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_b = [0x7F800000 for i in xrange(1000)]
 stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_b = [0xFF800000 for i in xrange(1000)]
 stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_a = [0x7FC00000 for i in xrange(1000)]
 stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_a = [0xFFC00000 for i in xrange(1000)]
 stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_b = [0x7FC00000 for i in xrange(1000)]
 stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
 stimulus_b = [0xFFC00000 for i in xrange(1000)]
 stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
-run_test(tb, stimulus_a, stimulus_b)
+run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
 
@@ -196,6 +169,6 @@ print count, "vectors passed"
 for i in xrange(10000):
     stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
     stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
-    run_test(tb, stimulus_a, stimulus_b)
+    run_test(stimulus_a, stimulus_b)
     count += 1000
     print count, "vectors passed"

@@ -15,42 +15,39 @@ module divider(
   input     clk;
   input     rst;
 
-  input     [15:0] input_a;
+  input     [31:0] input_a;
   input     input_a_stb;
   output    input_a_ack;
 
-  input     [15:0] input_b;
+  input     [31:0] input_b;
   input     input_b_stb;
   output    input_b_ack;
 
-  output    [15:0] output_z;
+  output    [31:0] output_z;
   output    output_z_stb;
   input     output_z_ack;
 
-  reg       [15:0] s_output_z_stb;
-  reg       [15:0] s_output_z;
-  reg       [15:0] s_input_a_ack;
-  reg       [15:0] s_input_b_ack;
+  reg       s_output_z_stb;
+  reg       [31:0] s_output_z;
+  reg       s_input_a_ack;
+  reg       s_input_b_ack;
 
-  reg       [4:0] state;
-  parameter get_a         = 5'd0,
-	    get_a_lo      = 5'd1,
-            get_b         = 5'd2,
-            get_b_lo      = 5'd3,
-            unpack        = 5'd4,
-	    special_cases = 5'd5,
-	    normalise_a   = 5'd6,
-	    normalise_b   = 5'd7,
-            divide_0      = 5'd8,
-            divide_1      = 5'd9,
-            divide_2      = 5'd10,
-            divide_3      = 5'd11,
-            normalise_1   = 5'd12,
-            normalise_2   = 5'd13,
-            round         = 5'd14,
-            pack          = 5'd15,
-            put_z         = 5'd16,
-            put_z_lo      = 5'd17;
+  reg       [3:0] state;
+  parameter get_a         = 4'd0,
+            get_b         = 4'd1,
+            unpack        = 4'd2,
+	    special_cases = 4'd3,
+	    normalise_a   = 4'd4,
+	    normalise_b   = 4'd5,
+            divide_0      = 4'd6,
+            divide_1      = 4'd7,
+            divide_2      = 4'd8,
+            divide_3      = 4'd9,
+            normalise_1   = 4'd10,
+            normalise_2   = 4'd11,
+            round         = 4'd12,
+            pack          = 4'd13,
+            put_z         = 4'd14;
 
   reg       [31:0] a, b, z;
   reg       [23:0] a_m, b_m, z_m;
@@ -69,17 +66,7 @@ module divider(
       begin
         s_input_a_ack <= 1;
         if (s_input_a_ack && input_a_stb) begin
-          a[31:16] <= input_a;
-          s_input_a_ack <= 0;
-          state <= get_a_lo;
-        end
-      end
-
-      get_a_lo:
-      begin
-        s_input_a_ack <= 1;
-        if (s_input_a_ack && input_a_stb) begin
-          a[15:0] <= input_a;
+          a <= input_a;
           s_input_a_ack <= 0;
           state <= get_b;
         end
@@ -89,17 +76,7 @@ module divider(
       begin
         s_input_b_ack <= 1;
         if (s_input_b_ack && input_b_stb) begin
-          b[31:16] <= input_b;
-          s_input_b_ack <= 0;
-          state <= get_b_lo;
-	end
-      end
-
-      get_b_lo:
-      begin
-        s_input_b_ack <= 1;
-        if (s_input_b_ack && input_b_stb) begin
-          b[15:0] <= input_b;
+          b <= input_b;
           s_input_b_ack <= 0;
           state <= unpack;
 	end
@@ -307,17 +284,7 @@ module divider(
       put_z:
       begin
         s_output_z_stb <= 1;
-	s_output_z <= z[31:16];
-        if (s_output_z_stb && output_z_ack) begin
-          s_output_z_stb <= 0;
-          state <= put_z_lo;
-        end
-      end
-
-      put_z_lo:
-      begin
-        s_output_z_stb <= 1;
-	s_output_z <= z[15:0];
+	s_output_z <= z;
         if (s_output_z_stb && output_z_ack) begin
           s_output_z_stb <= 0;
           state <= get_a;
