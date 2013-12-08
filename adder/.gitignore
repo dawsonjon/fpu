@@ -1,7 +1,4 @@
-*.v
-!adder.v
 stim_a
 stim_b
 resp_z
-test_bench.v
 test_bench_tb
