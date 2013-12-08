@@ -44,12 +44,13 @@ module divider(
             divide_0      = 5'd8,
             divide_1      = 5'd9,
             divide_2      = 5'd10,
-            normalise_1   = 5'd11,
-            normalise_2   = 5'd12,
-            round         = 5'd13,
-            pack          = 5'd14,
-            put_z         = 5'd15,
-            put_z_lo      = 5'd16;
+            divide_3      = 5'd11,
+            normalise_1   = 5'd12,
+            normalise_2   = 5'd13,
+            round         = 5'd14,
+            pack          = 5'd15,
+            put_z         = 5'd16,
+            put_z_lo      = 5'd17;
 
   reg       [31:0] a, b, z;
   reg       [23:0] a_m, b_m, z_m;
@@ -57,6 +58,7 @@ module divider(
   reg       a_s, b_s, z_s;
   reg       guard, round_bit, sticky;
   reg       [50:0] quotient, divisor, dividend, remainder;
+  reg       [5:0] count;
 
   always @(posedge clk)
   begin
@@ -211,25 +213,43 @@ module divider(
       begin
         z_s <= a_s ^ b_s;
         z_e <= a_e - b_e;
-        quotient <= a_m << 26;
+	quotient <= 0;
+	remainder <= 0;
+	count <= 0;
+        dividend <= a_m << 27;
         divisor <= b_m;
         state <= divide_1;
       end
 
       divide_1:
       begin
-        //change this to a serial division later
-        dividend <= quotient / divisor;
-        remainder <= quotient % divisor;
+        quotient <= quotient << 1;
+        remainder <= remainder << 1;
+        remainder[0] <= dividend[50];
+	dividend <= dividend << 1;
         state <= divide_2;
       end
 
       divide_2:
       begin
-        z_m <= dividend[26:3];
-        guard <= dividend[2];
-        round_bit <= dividend[1];
-        sticky <= dividend[0] | (remainder != 0);
+	if (remainder >= divisor) begin
+          quotient[0] <= 1;
+	  remainder <= remainder - divisor;
+	end
+	if (count == 49) begin
+          state <= divide_3;
+	end else begin
+	  count <= count + 1;
+	  state <= divide_1;
+	end
+      end
+
+      divide_3:
+      begin
+        z_m <= quotient[26:3];
+        guard <= quotient[2];
+        round_bit <= quotient[1];
+        sticky <= quotient[0] | (remainder != 0);
         state <= normalise_1;
       end
 
@@ -248,9 +268,6 @@ module divider(
 
       normalise_2:
       begin
-//	if (z_m == 0) begin
-//	  z_e <= -127;
-//	  state <= pack;
         if ($signed(z_e) < -126) begin
           z_e <= z_e + 1;
           z_m <= z_m >> 1;

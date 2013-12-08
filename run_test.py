@@ -104,8 +104,8 @@ def run_test(tb, stimulus_a, stimulus_b):
 tb = build_test_bench()
 
 #regression tests
-stimulus_a = [0x2b017]
-stimulus_b = [0xff3807ab]
+stimulus_a = [0x5c75da81, 0x2b017]
+stimulus_b = [0x2f642a39, 0xff3807ab]
 run_test(tb, stimulus_a, stimulus_b)
 
 #seed(0)
