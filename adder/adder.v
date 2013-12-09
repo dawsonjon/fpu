@@ -1,16 +1,16 @@
 `timescale 1ns/1ps
 module adder(
-	input_a,
-	input_b,
-	input_a_stb,
-	input_b_stb,
-	output_z_ack,
-	clk,
-	rst,
-	output_z,
-	output_z_stb,
-	input_a_ack,
-	input_b_ack);
+        input_a,
+        input_b,
+        input_a_stb,
+        input_b_stb,
+        output_z_ack,
+        clk,
+        rst,
+        output_z,
+        output_z_stb,
+        input_a_ack,
+        input_b_ack);
 
   input     clk;
   input     rst;
@@ -36,9 +36,9 @@ module adder(
   parameter get_a         = 4'd0,
             get_b         = 4'd1,
             unpack        = 4'd2,
-	    special_cases = 4'd3,
-	    align         = 4'd4,
-	    add_0         = 4'd5,
+            special_cases = 4'd3,
+            align         = 4'd4,
+            add_0         = 4'd5,
             add_1         = 4'd6,
             normalise_1   = 4'd7,
             normalise_2   = 4'd8,
@@ -76,7 +76,7 @@ module adder(
           b <= input_b;
           s_input_b_ack <= 0;
           state <= unpack;
-	end
+        end
       end
 
       unpack:
@@ -96,18 +96,18 @@ module adder(
         if ((a_e == 128 && a_m != 0) || (b_e == 128 && b_m != 0)) begin
           z[31] <= 1;
           z[30:23] <= 255;
-	  z[22] <= 1;
+          z[22] <= 1;
           z[21:0] <= 0;
           state <= put_z;
-	//if a is inf return inf
-	end else if (a_e == 128) begin
-	  z[31] <= a_s;
+        //if a is inf return inf
+        end else if (a_e == 128) begin
+          z[31] <= a_s;
           z[30:23] <= 255;
           z[22:0] <= 0;
           state <= put_z;
-	//if b is inf return inf
+        //if b is inf return inf
         end else if (b_e == 128) begin
-	  z[31] <= b_s;
+          z[31] <= b_s;
           z[30:23] <= 255;
           z[22:0] <= 0;
           state <= put_z;
@@ -123,76 +123,76 @@ module adder(
           z[30:23] <= b_e[7:0] + 127;
           z[22:0] <= b_m[26:3];
           state <= put_z;
-	//if b is zero return a
-	end else if (($signed(b_e) == -127) && (b_m == 0)) begin
+        //if b is zero return a
+        end else if (($signed(b_e) == -127) && (b_m == 0)) begin
           z[31] <= a_s;
           z[30:23] <= a_e[7:0] + 127;
           z[22:0] <= a_m[26:3];
           state <= put_z;
         end else begin
           //Denormalised Number
-	  if ($signed(a_e) == -127) begin
+          if ($signed(a_e) == -127) begin
             a_e <= -126;
           end else begin
-	    a_m[26] <= 1;
-	  end
-	  //Denormalised Number
-	  if ($signed(b_e) == -127) begin
-	    b_e <= -126;
-	  end else begin
-	    b_m[26] <= 1;
-	  end
-	  state <= align;
-	end
+            a_m[26] <= 1;
+          end
+          //Denormalised Number
+          if ($signed(b_e) == -127) begin
+            b_e <= -126;
+          end else begin
+            b_m[26] <= 1;
+          end
+          state <= align;
+        end
       end
 
       align:
       begin
         if ($signed(a_e) > $signed(b_e)) begin
-	  b_e <= b_e + 1;
-	  b_m <= b_m >> 1;
-	  b_m[0] <= b_m[0] | b_m[1];
+          b_e <= b_e + 1;
+          b_m <= b_m >> 1;
+          b_m[0] <= b_m[0] | b_m[1];
         end else if ($signed(a_e) < $signed(b_e)) begin
-	  a_e <= a_e + 1;
-	  a_m <= a_m >> 1;
-	  a_m[0] <= a_m[0] | a_m[1];
-	end else begin
-	  state <= add_0;
-	end
+          a_e <= a_e + 1;
+          a_m <= a_m >> 1;
+          a_m[0] <= a_m[0] | a_m[1];
+        end else begin
+          state <= add_0;
+        end
       end
 
       add_0:
       begin
-	z_e <= a_e;
-	if (a_s == b_s) begin
-	  sum <= a_m + b_m;
-	  z_s <= a_s;
-	end else begin
-	  if (a_m > b_m) begin
-	    sum <= a_m - b_m;
-	    z_s <= a_s;
-	  end else begin
-	    sum <= b_m - a_m;
-	    z_s <= b_s;
-	  end
-	end
+        z_e <= a_e;
+        if (a_s == b_s) begin
+          sum <= a_m + b_m;
+          z_s <= a_s;
+        end else begin
+          if (a_m > b_m) begin
+            sum <= a_m - b_m;
+            z_s <= a_s;
+          end else begin
+            sum <= b_m - a_m;
+            z_s <= b_s;
+          end
+        end
         state <= add_1;
       end
 
       add_1:
       begin
-	if (sum[27]) begin
-	  z_m <= sum[27:4];
-	  guard <= sum[3];
-	  round_bit <= sum[2];
+        if (sum[27]) begin
+          z_m <= sum[27:4];
+          guard <= sum[3];
+          round_bit <= sum[2];
           sticky <= sum[1] | sum[0];
-	  z_e <= z_e + 1;
-	end else begin
-	  z_m <= sum[26:3];
-	  guard <= sum[2];
-	  round_bit <= sum[1];
+          z_e <= z_e + 1;
+        end else begin
+          z_m <= sum[26:3];
+          guard <= sum[2];
+          round_bit <= sum[1];
           sticky <= sum[0];
-	end
+        end
         state <= normalise_1;
       end
 
@@ -201,9 +201,9 @@ module adder(
         if (z_m[23] == 0) begin
           z_e <= z_e - 1;
           z_m <= z_m << 1;
-	  z_m[0] <= guard;
+          z_m[0] <= guard;
           guard <= round_bit;
-	  round_bit <= 0;
+          round_bit <= 0;
         end else begin
           state <= normalise_2;
         end
@@ -226,23 +226,26 @@ module adder(
       begin
         if (guard && (round_bit | sticky | z_m[0])) begin
           z_m <= z_m + 1;
-	end
-	state <= pack;
+          if (z_m == 24'hffffff) begin
+            z_e <=z_e + 1;
+          end
+        end
+        state <= pack;
       end
 
       pack:
       begin
         z[22 : 0] <= z_m[22:0];
         z[30 : 23] <= z_e[7:0] + 127;
-	z[31] <= z_s;
+        z[31] <= z_s;
         if ($signed(z_e) == -126 && z_m[23] == 0) begin
           z[30 : 23] <= 0;
         end
-	//if overflow occurs, return inf
+        //if overflow occurs, return inf
         if ($signed(z_e) > 127) begin
           z[22 : 0] <= 0;
           z[30 : 23] <= 255;
-	  z[31] <= z_s;
+          z[31] <= z_s;
         end
         state <= put_z;
       end
@@ -250,7 +253,7 @@ module adder(
       put_z:
       begin
         s_output_z_stb <= 1;
-	s_output_z <= z;
+        s_output_z <= z;
         if (s_output_z_stb && output_z_ack) begin
           s_output_z_stb <= 0;
           state <= get_a;
