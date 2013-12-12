@@ -166,7 +166,7 @@ count += len(stimulus_a)
 print count, "vectors passed"
 
 #seed(0)
-for i in xrange(10000):
+for i in xrange(100000):
     stimulus_a = [randint(0, 1<<32) for i in xrange(1000)]
     stimulus_b = [randint(0, 1<<32) for i in xrange(1000)]
     run_test(stimulus_a, stimulus_b)
