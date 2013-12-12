@@ -1,4 +1,7 @@
-`timescale 1ns/1ps
+//IEEE Floating Point Divider (Single Precision)
+//Copyright (C) Jonathan P Dawson 2013
+//2013-12-12
+//
 module divider(
         input_a,
         input_b,

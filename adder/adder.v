@@ -1,4 +1,7 @@
-`timescale 1ns/1ps
+//IEEE Floating Point Adder (Single Precision)
+//Copyright (C) Jonathan P Dawson 2013
+//2013-12-12
+
 module adder(
         input_a,
         input_b,
