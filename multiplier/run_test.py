@@ -32,6 +32,10 @@ def run_test(stimulus_a, stimulus_b):
     for value in stim_z:
         actual_responses.append(int(value))
 
+    if len(actual_responses) < len(expected_responses):
+        print "Fail ... not enough results"
+        exit(0)
+
     for expected, actual, a, b in zip(expected_responses, actual_responses, stimulus_a, stimulus_b):
         if(expected != actual):
             expected_mantissa = expected & 0x7fffff

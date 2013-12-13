@@ -32,6 +32,10 @@ def run_test(stimulus_a, stimulus_b):
     for value in stim_z:
         actual_responses.append(int(value))
 
+    if len(actual_responses) < len(expected_responses):
+        print "Fail ... not enough results"
+        exit(0)
+
     for expected, actual, a, b in zip(expected_responses, actual_responses, stimulus_a, stimulus_b):
         if(expected != actual):
             expected_mantissa = expected & 0x7fffff
@@ -78,8 +82,8 @@ compile()
 count = 0
 
 #regression tests
-stimulus_a = [0x83e73d5c, 0xbf9b1e94, 0x34082401, 0x5e8ef81, 0x5c75da81, 0x2b017]
-stimulus_b = [0x1c800000, 0xc038ed3a, 0xb328cd45, 0x114f3db, 0x2f642a39, 0xff3807ab]
+stimulus_a = [0x22cb525a, 0x40000000, 0x83e73d5c, 0xbf9b1e94, 0x34082401, 0x5e8ef81, 0x5c75da81, 0x2b017]
+stimulus_b = [0xadd79efa, 0xC0000000, 0x1c800000, 0xc038ed3a, 0xb328cd45, 0x114f3db, 0x2f642a39, 0xff3807ab]
 run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"

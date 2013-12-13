@@ -171,7 +171,7 @@ module adder(
           sum <= a_m + b_m;
           z_s <= a_s;
         end else begin
-          if (a_m > b_m) begin
+          if (a_m >= b_m) begin
             sum <= a_m - b_m;
             z_s <= a_s;
           end else begin
@@ -201,7 +201,7 @@ module adder(
 
       normalise_1:
       begin
-        if (z_m[23] == 0) begin
+        if (z_m[23] == 0 && $signed(z_e) > -126) begin
           z_e <= z_e - 1;
           z_m <= z_m << 1;
           z_m[0] <= guard;
