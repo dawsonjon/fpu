@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from chips.api.api import *
 import sys
 import subprocess
 from random import randint
 from random import seed
+import struct
 
 def compile():
     subprocess.call("iverilog -o test_bench_tb file_reader_a.v file_writer.v int_to_float.v test_bench.v test_bench_tb.v", shell=True)
@@ -53,9 +53,7 @@ def run_test(stimulus_a):
             print "Fail ... expected:", hex(expected), "actual:", hex(actual)
 
             print hex(a)
-            print "a mantissa:", a & 0x7fffff
-            print "a exponent:", ((a & 0x7f800000) >> 23) - 127
-            print "a sign:", ((a & 0x80000000) >> 31)
+            print a
 
             print hex(expected)
             print "expected mantissa:", expected & 0x7fffff
@@ -73,7 +71,7 @@ compile()
 count = 0
 
 #regression tests
-stimulus_a = [0xba57711a, 0xbf9b1e94, 0x34082401, 0x5e8ef81, 0x5c75da81, 0x2b017]
+stimulus_a = [0xf5360a58, 0x2f005329, 0x34082401, 0xba57711a, 0xbf9b1e94, 0x5e8ef81, 0x5c75da81, 0x2b017]
 run_test(stimulus_a)
 count += len(stimulus_a)
 print count, "vectors passed"
