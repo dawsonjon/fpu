@@ -4,6 +4,7 @@ IEEE 754 floating point arithmetic
 Synthesiseable IEEE 754 floating point library in Verilog.
 
 	+ Provides Divider, Multiplier and Adder
+	+ Provides float_to_int and int_to_float
 	+ Supports Denormal Numbers
 	+ Round-to-nearest (ties to even)
 	+ Optimised for area
@@ -11,6 +12,14 @@ Synthesiseable IEEE 754 floating point library in Verilog.
 
 Test
 ====
+
+Dependencies
+------------
+To run the test suite, you will need the g++ compiler, and the icarus verilog
+simulator.
+
+Procedure
+---------
 
 For each arithmetic function, a test-bench is provided. The testbench consists
 of a Python script run_test.py and a Simple C model used as the reference for
