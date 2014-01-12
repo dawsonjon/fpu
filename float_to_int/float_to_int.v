@@ -76,7 +76,7 @@ module float_to_int(
 
       convert:
       begin
-        if ($signed(a_e) < 31) begin
+        if ($signed(a_e) < 31 && a_m) begin
           a_e <= a_e + 1;
           a_m <= a_m >> 1;
         end else begin

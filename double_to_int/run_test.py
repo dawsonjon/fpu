@@ -15,7 +15,7 @@ def cleanup():
 atexit.register(cleanup)
 
 def compile():
-    subprocess.call("iverilog -o test_bench_tb file_reader_a.v file_reader_b.v file_writer.v double_to_int.v test_bench.v test_bench_tb.v", shell=True)
+    subprocess.call("iverilog -o test_bench_tb file_reader_a.v file_writer.v double_to_int.v test_bench.v test_bench_tb.v", shell=True)
 
 def run_test(stimulus_a):
 
@@ -81,23 +81,13 @@ def run_test(stimulus_a):
             print "a exponent:",               ((a & 0x7ff0000000000000) >> 52) - 1023
             print "a sign:",                   ((a & 0x8000000000000000) >> 63)
 
-            print hex(expected)
-            print "expected mantissa:",   expected & 0x000fffffffffffff
-            print "expected exponent:", ((expected & 0x7ff0000000000000) >> 52) - 1023
-            print "expected sign:",     ((expected & 0x8000000000000000) >> 63)
-
-            print hex(actual)
-            print "actual mantissa:",       actual & 0x000fffffffffffff
-            print "actual exponent:",     ((actual & 0x7ff0000000000000) >> 52) - 1023
-            print "actual sign:",         ((actual & 0x8000000000000000) >> 63)
-
             sys.exit(0)
 
 compile()
 count = 0
 
 #regression tests
-stimulus_a = [0xff80000000000000]
+stimulus_a = [0x43e9cd2c912d5218, 0xce6964896a90c000L, 0xff80000000000000, 0xc3e8356aefb949d9L]
 run_test(stimulus_a)
 count += len(stimulus_a)
 print count, "vectors passed"

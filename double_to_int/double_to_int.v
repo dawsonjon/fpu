@@ -64,10 +64,20 @@ module double_to_int(
       special_cases:
       begin
         if ($signed(a_e) == -1023) begin
+          //zero
           z <= 0;
           state <= put_z;
-        end else if ($signed(a_e) > 255) begin
+        end else if ($signed(a_e) == 1024 && a[51:0] != 0) begin
+          //nan
           z <= 64'h8000000000000000;
+          state <= put_z;
+        end else if ($signed(a_e) > 63) begin
+          //too big
+          if (a_s) begin
+              z <= 64'h8000000000000000;
+          end else begin
+              z <= 64'h0000000000000000;
+          end
           state <= put_z;
         end else begin
           state <= convert;
@@ -76,11 +86,11 @@ module double_to_int(
 
       convert:
       begin
-        if ($signed(a_e) < 255) begin
+        if ($signed(a_e) < 63 && a_m) begin
           a_e <= a_e + 1;
           a_m <= a_m >> 1;
         end else begin
-          if (a_m[63]) begin
+          if (a_m[63] && a_s) begin
             z <= 64'h8000000000000000;
           end else begin
             z <= a_s ? -a_m : a_m;

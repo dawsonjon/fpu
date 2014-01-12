@@ -6,13 +6,13 @@ using namespace std;
 int main()
 {
 	double f = 1.0;
-	unsigned long int i;
+	uint64_t i;
 	uint64_t a;
 
 	while(1){
 		cin >> a;
 		f = *(double*)&a;
-		i = (unsigned long int)f;
+		i = (uint64_t)f;
 		cout << i << endl;
 	}
 
