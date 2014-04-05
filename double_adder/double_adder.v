@@ -168,14 +168,14 @@ module double_adder(
       begin
         z_e <= a_e;
         if (a_s == b_s) begin
-          sum <= a_m + b_m;
+          sum <= {1'd0, a_m} + b_m;
           z_s <= a_s;
         end else begin
           if (a_m > b_m) begin
-            sum <= a_m - b_m;
+            sum <= {1'd0, a_m} - b_m;
             z_s <= a_s;
           end else begin
-            sum <= b_m - a_m;
+            sum <= {1'd0, b_m} - a_m;
             z_s <= b_s;
           end
         end
@@ -229,7 +229,7 @@ module double_adder(
       begin
         if (guard && (round_bit | sticky | z_m[0])) begin
           z_m <= z_m + 1;
-          if (z_m == 52'hffffff) begin
+          if (z_m == 53'h1fffffffffffff) begin
             z_e <=z_e + 1;
           end
         end
