@@ -1,7 +1,7 @@
 //IEEE Floating Point to Integer Converter (Double Precision)
 //Copyright (C) Jonathan P Dawson 2014
 //2014-01-11
-module double_to_int(
+module double_to_long(
         input_a,
         input_a_stb,
         output_z_ack,

@@ -19,7 +19,7 @@ module test_bench(clk, rst);
     .input_a(wire_39795168),
     .input_a_stb(wire_39795168_stb),
     .input_a_ack(wire_39795168_ack));
-  double_to_int float_to_int_39759952(
+  double_to_long float_to_int_39759952(
     .clk(clk),
     .rst(rst),
     .input_a(wire_39069600),

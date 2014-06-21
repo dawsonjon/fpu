@@ -15,7 +15,7 @@ def cleanup():
 atexit.register(cleanup)
 
 def compile():
-    subprocess.call("iverilog -o test_bench_tb file_reader_a.v file_writer.v double_to_int.v test_bench.v test_bench_tb.v", shell=True)
+    subprocess.call("iverilog -o test_bench_tb file_reader_a.v file_writer.v long_to_double.v test_bench.v test_bench_tb.v", shell=True)
 
 def run_test(stimulus_a):
 
