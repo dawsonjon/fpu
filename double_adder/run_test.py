@@ -107,8 +107,8 @@ compile()
 count = 0
 
 #regression tests
-stimulus_a = [0xff80000000000000]
-stimulus_b = [0x7f80000000000000]
+stimulus_a = [0x3ff00000000000c5L, 0xff80000000000000]
+stimulus_b = [0xbd28a404211fb72bL, 0x7f80000000000000]
 run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
