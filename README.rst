@@ -27,7 +27,7 @@ verification. The C reference model is contained in the c_test subfolder. To
 recompile the C model run the following command::
 	
 	~$ cd c_test
-	~$ g++ test test.cpp
+	~$ g++ -o test test.cpp
 
 The test suite consists of corner cases, edge cases, and 100,000,000
 constrained random vectors. The test suite could take several days to run to
