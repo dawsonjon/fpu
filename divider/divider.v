@@ -30,12 +30,12 @@ module divider(
   output    output_z_stb;
   input     output_z_ack;
 
-  reg       s_output_z_stb;
+  reg       s_output_z_stb = 0;
   reg       [31:0] s_output_z;
-  reg       s_input_a_ack;
-  reg       s_input_b_ack;
+  reg       s_input_a_ack = 0;
+  reg       s_input_b_ack = 0;
 
-  reg       [3:0] state;
+  reg       [3:0] state = get_a;
   parameter get_a         = 4'd0,
             get_b         = 4'd1,
             unpack        = 4'd2,
@@ -98,14 +98,14 @@ module divider(
 
       special_cases:
       begin
-        //if a is NaN or b is NaN return NaN 
+        //if a is NaN or b is NaN return NaN
         if ((a_e == 128 && a_m != 0) || (b_e == 128 && b_m != 0)) begin
           z[31] <= 1;
           z[30:23] <= 255;
           z[22] <= 1;
           z[21:0] <= 0;
           state <= put_z;
-          //if a is inf and b is inf return NaN 
+          //if a is inf and b is inf return NaN
         end else if ((a_e == 128) && (b_e == 128)) begin
           z[31] <= 1;
           z[30:23] <= 255;
@@ -313,4 +313,3 @@ module divider(
   assign output_z = s_output_z;
 
 endmodule
-
