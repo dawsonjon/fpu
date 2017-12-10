@@ -17,6 +17,35 @@ atexit.register(cleanup)
 def compile():
     subprocess.call("iverilog -o test_bench_tb file_reader_a.v file_reader_b.v file_writer.v double_adder.v test_bench.v test_bench_tb.v", shell=True)
 
+def get_mantissa(x):
+    return x & 0x000fffffffffffff
+
+def get_exponent(x):
+    return ((x & 0x7ff0000000000000) >> 52) - 1023
+
+def get_sign(x):
+    return ((x & 0x8000000000000000) >> 63)
+
+def is_nan(x):
+    return get_exponent(x) == 1024 and get_mantissa(x) != 0
+
+def is_inf(x):
+    return get_exponent(x) == 1024 and get_mantissa(x) == 0
+
+def is_pos_inf(x):
+    return is_inf(x) and not get_sign(x)
+
+def is_neg_inf(x):
+    return is_inf(x) and get_sign(x)
+
+def match(x, y):
+    return (
+        (is_pos_inf(x) and is_pos_inf(y)) or
+        (is_neg_inf(x) and is_neg_inf(y)) or
+        (is_nan(x) and is_nan(y)) or
+        (x == y)
+        )
+
 def run_test(stimulus_a, stimulus_b):
 
     process = subprocess.Popen("c_test/test", stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -62,20 +91,7 @@ def run_test(stimulus_a, stimulus_b):
         exit(0)
 
     for expected, actual, a, b in zip(expected_responses, actual_responses, stimulus_a, stimulus_b):
-        if(expected != actual):
-            expected_mantissa =   expected & 0x000fffffffffffff
-            expected_exponent = ((expected & 0x7ff0000000000000) >> 52) - 1023
-            expected_sign     = ((expected & 0x8000000000000000) >> 63)
-            actual_mantissa   =     actual & 0x000fffffffffffff
-            actual_exponent   = ((  actual & 0x7ff0000000000000) >> 52) - 1023
-            actual_sign       = ((  actual & 0x8000000000000000) >> 63)
-            if expected_exponent == 1024 and expected_mantissa != 0:
-                if(actual_exponent == 1024):
-                    passed = True
-            else:
-                passed = False
-        else:
-             passed = True
+        passed = match(expected, actual)
 
         if not passed:
 

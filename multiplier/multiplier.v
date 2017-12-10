@@ -106,20 +106,26 @@ module multiplier(
           z[31] <= a_s ^ b_s;
           z[30:23] <= 255;
           z[22:0] <= 0;
-          state <= put_z;
-           //if b is zero return NaN
-          if ($signed(b_e == -127) && (b_m == 0)) begin
+          //if b is zero return NaN
+          if (($signed(b_e) == -127) && (b_m == 0)) begin
             z[31] <= 1;
             z[30:23] <= 255;
             z[22] <= 1;
             z[21:0] <= 0;
-            state <= put_z;
           end
+          state <= put_z;
         //if b is inf return inf
         end else if (b_e == 128) begin
           z[31] <= a_s ^ b_s;
           z[30:23] <= 255;
           z[22:0] <= 0;
+          //if a is zero return NaN
+          if (($signed(a_e) == -127) && (a_m == 0)) begin
+            z[31] <= 1;
+            z[30:23] <= 255;
+            z[22] <= 1;
+            z[21:0] <= 0;
+          end
           state <= put_z;
         //if a is zero return zero
         end else if (($signed(a_e) == -127) && (a_m == 0)) begin

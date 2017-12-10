@@ -107,8 +107,8 @@ module double_multiplier(
           z[62:52] <= 2047;
           z[51:0] <= 0;
           state <= put_z;
-           //if b is zero return NaN
-          if ($signed(b_e == -1023) && (b_m == 0)) begin
+          //if b is zero return NaN
+          if (($signed(b_e) == -1023) && (b_m == 0)) begin
             z[63] <= 1;
             z[62:52] <= 2047;
             z[51] <= 1;
@@ -120,6 +120,14 @@ module double_multiplier(
           z[63] <= a_s ^ b_s;
           z[62:52] <= 2047;
           z[51:0] <= 0;
+          //if b is zero return NaN
+          if (($signed(a_e) == -1023) && (a_m == 0)) begin
+            z[63] <= 1;
+            z[62:52] <= 2047;
+            z[51] <= 1;
+            z[50:0] <= 0;
+            state <= put_z;
+          end
           state <= put_z;
         //if a is zero return zero
         end else if (($signed(a_e) == -1023) && (a_m == 0)) begin

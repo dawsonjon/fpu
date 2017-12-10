@@ -107,6 +107,13 @@ module adder(
           z[31] <= a_s;
           z[30:23] <= 255;
           z[22:0] <= 0;
+          //if a is inf and signs don't match return nan
+          if ((b_e == 128) && (a_s != b_s)) begin
+              z[31] <= b_s;
+              z[30:23] <= 255;
+              z[22] <= 1;
+              z[21:0] <= 0;
+          end
           state <= put_z;
         //if b is inf return inf
         end else if (b_e == 128) begin

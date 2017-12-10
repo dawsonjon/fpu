@@ -107,6 +107,13 @@ module double_adder(
           z[63] <= a_s;
           z[62:52] <= 2047;
           z[51:0] <= 0;
+          //if a is inf and signs don't match return nan
+          if ((b_e == 1024) && (a_s != b_s)) begin
+              z[63] <= 1;
+              z[62:52] <= 2047;
+              z[51] <= 1;
+              z[50:0] <= 0;
+          end
           state <= put_z;
         //if b is inf return inf
         end else if (b_e == 1024) begin
