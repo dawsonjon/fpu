@@ -251,6 +251,9 @@ module adder(
         if ($signed(z_e) == -126 && z_m[23] == 0) begin
           z[30 : 23] <= 0;
         end
+        if ($signed(z_e) == -126 && z_m[23:0] == 24'h0) begin
+          z[31] <= 1'b0; // FIX SIGN BUG: -a + a = +0.
+        end
         //if overflow occurs, return inf
         if ($signed(z_e) > 127) begin
           z[22 : 0] <= 0;
