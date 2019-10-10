@@ -251,6 +251,10 @@ module double_adder(
         if ($signed(z_e) == -1022 && z_m[52] == 0) begin
           z[62 : 52] <= 0;
         end
+        if ($signed(z_e) == -1022 && z_m[52:0] == 0) begin
+           z[63] <= 0;
+        end
+
         //if overflow occurs, return inf
         if ($signed(z_e) > 1023) begin
           z[51 : 0] <= 0;

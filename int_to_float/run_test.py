@@ -71,10 +71,11 @@ compile()
 count = 0
 
 #regression tests
-stimulus_a = [0xf5360a58, 0x2f005329, 0x34082401, 0xba57711a, 0xbf9b1e94, 0x5e8ef81, 0x5c75da81, 0x2b017]
+stimulus_a = [0x155635ca, 0xf5360a58, 0x2f005329, 0x34082401, 0xba57711a, 0xbf9b1e94, 0x5e8ef81, 0x5c75da81, 0x2b017]
 run_test(stimulus_a)
 count += len(stimulus_a)
 print count, "vectors passed"
+exit(0)
 
 #corner cases
 from itertools import permutations

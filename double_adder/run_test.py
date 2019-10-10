@@ -123,8 +123,8 @@ compile()
 count = 0
 
 #regression tests
-stimulus_a = [0x3ff00000000000c5L, 0xff80000000000000]
-stimulus_b = [0xbd28a404211fb72bL, 0x7f80000000000000]
+stimulus_a = [0x3ff00000000000c5L, 0xff80000000000000, 0x7f80000000000000]
+stimulus_b = [0xbd28a404211fb72bL, 0x7f80000000000000, 0xff80000000000000]
 run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
 print count, "vectors passed"
@@ -145,7 +145,6 @@ stimulus_b = [long(i[1]) for i in permutations([
     0x7ff8000000000000, 
     0xfff8000000000000, 
     0x7ff0000000000000, 
-    0xfff0000000000000
 ], 2)]
 run_test(stimulus_a, stimulus_b)
 count += len(stimulus_a)
