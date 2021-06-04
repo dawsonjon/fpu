@@ -54,7 +54,7 @@ module double_multiplier(
   reg       [12:0] a_e, b_e, z_e;
   reg       a_s, b_s, z_s;
   reg       guard, round_bit, sticky;
-  reg       [107:0] product;
+  reg       [105:0] product;
 
   always @(posedge clk)
   begin
@@ -182,16 +182,16 @@ module double_multiplier(
       begin
         z_s <= a_s ^ b_s;
         z_e <= a_e + b_e + 1;
-        product <= a_m * b_m * 4;
+        product <= a_m * b_m;
         state <= multiply_1;
       end
 
       multiply_1:
       begin
-        z_m <= product[107:55];
-        guard <= product[54];
-        round_bit <= product[53];
-        sticky <= (product[52:0] != 0);
+        z_m <= product[105:53];
+        guard <= product[52];
+        round_bit <= product[51];
+        sticky <= (product[50:0] != 0);
         state <= normalise_1;
       end
 

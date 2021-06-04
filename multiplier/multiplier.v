@@ -54,7 +54,7 @@ module multiplier(
   reg       [9:0] a_e, b_e, z_e;
   reg       a_s, b_s, z_s;
   reg       guard, round_bit, sticky;
-  reg       [49:0] product;
+  reg       [47:0] product;
 
   always @(posedge clk)
   begin
@@ -180,16 +180,16 @@ module multiplier(
       begin
         z_s <= a_s ^ b_s;
         z_e <= a_e + b_e + 1;
-        product <= a_m * b_m * 4;
+        product <= a_m * b_m;
         state <= multiply_1;
       end
 
       multiply_1:
       begin
-        z_m <= product[49:26];
-        guard <= product[25];
-        round_bit <= product[24];
-        sticky <= (product[23:0] != 0);
+        z_m <= product[47:24];
+        guard <= product[23];
+        round_bit <= product[22];
+        sticky <= (product[21:0] != 0);
         state <= normalise_1;
       end
 
