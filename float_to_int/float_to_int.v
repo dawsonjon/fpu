@@ -22,11 +22,11 @@ module float_to_int(
   output    output_z_stb;
   input     output_z_ack;
 
-  reg       s_output_z_stb;
+  reg       s_output_z_stb = 0;
   reg       [31:0] s_output_z;
-  reg       s_input_a_ack;
+  reg       s_input_a_ack = 0;
 
-  reg       [2:0] state;
+  reg       [2:0] state = get_a;
   parameter get_a         = 3'd0,
             special_cases = 3'd1,
             unpack        = 3'd2,
@@ -113,4 +113,3 @@ module float_to_int(
   assign output_z = s_output_z;
 
 endmodule
-
