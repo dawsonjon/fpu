@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from chips.api.api import *
 import sys
 import subprocess
 from random import randint
