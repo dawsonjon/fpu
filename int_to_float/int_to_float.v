@@ -22,12 +22,12 @@ module int_to_float(
   output    output_z_stb;
   input     output_z_ack;
 
-  reg       s_output_z_stb;
+  reg       s_output_z_stb = 0;
   reg       [31:0] s_output_z;
-  reg       s_input_a_ack;
+  reg       s_input_a_ack = 0;
   reg       s_input_b_ack;
 
-  reg       [2:0] state;
+  reg       [2:0] state = get_a;
   parameter get_a         = 3'd0,
             convert_0     = 3'd1,
             convert_1     = 3'd2,
@@ -138,4 +138,3 @@ module int_to_float(
   assign output_z = s_output_z;
 
 endmodule
-
