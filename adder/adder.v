@@ -237,8 +237,8 @@ module adder(
         if (guard && (round_bit | sticky | z_m[0])) begin
           if (z_m == 24'hffffff) begin
             z_e <=z_e + 1;
-          z_m <= z_m + 1;
           end
+          z_m <= z_m + 1;
         end
         state <= pack;
       end
