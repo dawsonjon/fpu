@@ -263,7 +263,7 @@ module double_divider(
       begin
         if (guard && (round_bit | sticky | z_m[0])) begin
           z_m <= z_m + 1;
-          if (z_m == 53'hffffff) begin
+          if (z_m == 53'h1fffffffffffff) begin
             z_e <=z_e + 1;
           end
         end
