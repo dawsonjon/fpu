@@ -81,10 +81,10 @@ module double_to_float(
             z[22:0] <= 0;
         end else begin
             z[30:23] <= (a[62:52] - 1023) + 127;
-            if (a[28] && (a[27] || a[26:0])) begin
-                z[22:0] <= a[51:29] + 1;
-            end else begin
-                z[22:0] <= a[51:29];
+            z[22:0] <= a[51:29];
+            //round to nearest even; the carry runs into the exponent
+            if (a[28] && (a[27] || a[26:0] != 0 || a[29])) begin
+                z[30:0] <= {a[62:52] - 11'd896, a[51:29]} + 1;
             end
         end
       end
@@ -94,8 +94,9 @@ module double_to_float(
         if (z_e == 897 || (z_m == 0 && guard == 0)) begin
             state <= put_z;
             z[22:0] <= z_m;
-            if (guard && (round || sticky)) begin
-                z[22:0] <= z_m + 1;
+            //round to nearest even; the carry gives the smallest normal number
+            if (guard && (round || sticky || z_m[0])) begin
+                z[30:0] <= {8'd0, z_m[22:0]} + 1;
             end
         end else begin
             z_e <= z_e + 1;
